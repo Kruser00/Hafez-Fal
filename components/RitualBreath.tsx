@@ -34,8 +34,6 @@ const RitualBreath: React.FC<RitualBreathProps> = ({ onComplete }) => {
   useEffect(() => {
     if (charging) {
       const startTime = Date.now();
-      // Resume from previous progress would require more logic, 
-      // simplified here to restart breath for ritual purity
       
       intervalRef.current = window.setInterval(() => {
         const elapsed = Date.now() - startTime;
@@ -62,11 +60,11 @@ const RitualBreath: React.FC<RitualBreathProps> = ({ onComplete }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center"
+        className="text-center px-4"
       >
-        <h2 className="text-2xl font-serif text-mystic-gold mb-2">The Virtual Breath</h2>
-        <p className="text-slate-400 font-light max-w-xs mx-auto">
-          Hold the ember. Quiet your mind. Infuse your intention into the digital ether.
+        <h2 className="text-2xl text-mystic-gold mb-4 font-bold">تمرکز بر نیت</h2>
+        <p className="text-slate-300 text-lg leading-relaxed max-w-xs mx-auto">
+          انگشت خود را نگه دارید، ذهن را آرام کنید و بر نیت خود تمرکز کنید.
         </p>
       </motion.div>
 
@@ -135,9 +133,9 @@ const RitualBreath: React.FC<RitualBreathProps> = ({ onComplete }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="text-sm tracking-widest text-orange-300 uppercase font-serif"
+            className="text-sm tracking-widest text-orange-300 font-bold"
           >
-            Charging Divination...
+            در حال ارتباط...
           </motion.p>
         )}
       </AnimatePresence>

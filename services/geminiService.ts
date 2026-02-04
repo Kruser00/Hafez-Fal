@@ -20,10 +20,10 @@ export const interpretFal = async (
   const prompt = `
     The seeker asks about: ${context}.
     
-    The Poem drawn is (English Translation):
-    ${poem.english.join('\n')}
+    The Poem drawn is:
+    ${poem.persian.join('\n')}
     
-    Please provide the Sufi interpretation.
+    Please provide the Sufi interpretation in Persian.
   `;
 
   try {
@@ -38,11 +38,11 @@ export const interpretFal = async (
           properties: {
             interpretation: {
               type: Type.STRING,
-              description: "The mystical interpretation of the poem based on the user's context.",
+              description: "The mystical interpretation of the poem in Persian.",
             },
             reflection: {
               type: Type.STRING,
-              description: "A short, powerful reflective sentence for the user.",
+              description: "A short reflective sentence in Persian.",
             },
           },
           required: ["interpretation", "reflection"],
@@ -59,8 +59,8 @@ export const interpretFal = async (
     console.error("Gemini Interpretation Failed:", error);
     // Fallback for demo stability if API fails
     return {
-      interpretation: "The nightingale sings to the rose not of sorrow, but of the patience required for blooming. Your heart seeks answers that are already written upon it. Look inward, for the cup of Jamshid—the truth you seek—has been in your hand all along.",
-      reflection: "What veil must you lift to see the Beloved in your own mirror?"
+      interpretation: "بلبل به شاخ گل نه از غم، که از شوق می‌نالد. دل قوی دار که آنچه می‌طلبی در درون توست. جام جم در دستان توست، تنها باید حجاب‌ها را کنار بزنی و در آینه دل بنگری.",
+      reflection: "یوسف گمگشته باز آید به کنعان غم مخور."
     };
   }
 };

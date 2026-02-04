@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Poem, InterpretationResponse } from '../types';
 import { interpretFal } from '../services/geminiService';
-import { BrainCircuit, Loader2, Share2, RefreshCw } from 'lucide-react';
+import { BrainCircuit, Loader2, Share2, RefreshCw, Sparkles } from 'lucide-react';
 import { audioEngine } from '../utils/audioEngine';
 
 interface TheRevealProps {
@@ -34,7 +34,7 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
   }, [poem, userContext]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto pb-20 px-4 pt-10 relative z-10">
+    <div className="w-full max-w-4xl mx-auto pb-20 px-4 pt-10 relative z-10" dir="rtl">
       
       {/* Poem Section - Fades in first */}
       <motion.div
@@ -44,11 +44,11 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
         className="mb-12 text-center"
       >
         <div className="inline-block p-1 border-t border-b border-mystic-gold/30 mb-8">
-            <span className="text-xs uppercase tracking-widest text-slate-400">Ghazal {poem.id}</span>
+            <span className="text-sm font-bold text-slate-400 px-4">غزل شماره {poem.id}</span>
         </div>
 
         {/* Persian Text */}
-        <div className="space-y-4 mb-10 font-persian text-2xl md:text-3xl text-slate-200 leading-loose" dir="rtl">
+        <div className="space-y-6 mb-10 font-persian text-2xl md:text-3xl text-slate-200 leading-[2.5]" dir="rtl">
           {poem.persian.map((line, i) => (
             <motion.p 
               key={i}
@@ -58,16 +58,6 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
             >
               {line}
             </motion.p>
-          ))}
-        </div>
-
-        {/* Divider */}
-        <div className="w-16 h-[1px] bg-mystic-gold/50 mx-auto my-8" />
-
-        {/* English Text */}
-        <div className="space-y-2 font-serif text-slate-400 italic">
-          {poem.english.map((line, i) => (
-            <p key={i}>{line}</p>
           ))}
         </div>
       </motion.div>
@@ -82,24 +72,26 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
         {/* Decorative glass shine */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-mystic-gold/50 to-transparent opacity-50" />
 
-        <div className="flex items-center gap-3 mb-6">
-          <BrainCircuit className="w-5 h-5 text-mystic-gold" />
-          <h3 className="text-lg font-serif text-mystic-gold">The Mystic's Insight</h3>
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex items-center gap-3">
+            <BrainCircuit className="w-5 h-5 text-mystic-gold" />
+            <h3 className="text-xl font-bold text-mystic-gold">تفسیر عرفانی فال</h3>
+          </div>
         </div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-10 space-y-4">
              <Loader2 className="w-8 h-8 text-mystic-gold animate-spin" />
-             <p className="text-xs tracking-widest text-slate-500 animate-pulse">Consulting the invisible world...</p>
+             <p className="text-sm text-slate-400 animate-pulse">در حال دریافت الهام...</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            <p className="text-slate-300 leading-relaxed font-light">
+          <div className="space-y-8">
+            <p className="text-slate-200 leading-[2.2] text-lg text-justify">
               {interpretation?.interpretation}
             </p>
             
-            <div className="bg-slate-900/50 p-4 rounded border-l-2 border-mystic-gold">
-               <p className="text-mystic-gold font-serif text-lg">
+            <div className="bg-slate-900/50 p-6 rounded-lg border-r-4 border-mystic-gold">
+               <p className="text-mystic-gold text-xl leading-relaxed italic">
                  "{interpretation?.reflection}"
                </p>
             </div>
@@ -112,18 +104,18 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 4 }}
-        className="mt-10 flex justify-center gap-4"
+        className="mt-12 flex justify-center gap-4"
       >
          <button 
            onClick={onReset}
-           className="flex items-center gap-2 px-6 py-3 bg-transparent border border-slate-600 hover:border-mystic-gold text-slate-400 hover:text-mystic-gold transition-colors rounded-full text-sm uppercase tracking-widest"
+           className="flex items-center gap-2 px-8 py-3 bg-transparent border border-slate-600 hover:border-mystic-gold text-slate-300 hover:text-mystic-gold transition-colors rounded-full text-base"
          >
-           <RefreshCw className="w-4 h-4" />
-           New Ritual
+           <RefreshCw className="w-4 h-4 ml-2" />
+           نیت دوباره
          </button>
-         <button className="flex items-center gap-2 px-6 py-3 bg-mystic-gold text-mystic-900 font-bold hover:bg-white transition-colors rounded-full text-sm uppercase tracking-widest">
-           <Share2 className="w-4 h-4" />
-           Share Fate
+         <button className="flex items-center gap-2 px-8 py-3 bg-mystic-gold text-mystic-900 font-bold hover:bg-white transition-colors rounded-full text-base">
+           <Share2 className="w-4 h-4 ml-2" />
+           اشتراک گذاری
          </button>
       </motion.div>
 

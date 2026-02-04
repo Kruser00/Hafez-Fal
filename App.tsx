@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import RitualBreath from './components/RitualBreath';
 import TheScroll from './components/TheScroll';
 import TheReveal from './components/TheReveal';
+import Starfield from './components/Starfield';
 import { Sparkles, Moon, Volume2, VolumeX } from 'lucide-react';
 import { audioEngine } from './utils/audioEngine';
 
@@ -39,43 +40,35 @@ const App: React.FC = () => {
 
   const handlePoemSelect = (poem: Poem) => {
     audioEngine.playClick();
+    // Fade out ambient drone to let the Reveal swell take over
+    audioEngine.fadeAmbientOut(3); 
     setSelectedPoem(poem);
     setStage(AppStage.REVEAL);
   };
 
   const resetRitual = () => {
     audioEngine.playClick();
+    // Bring back the ambient drone for the new ritual
+    audioEngine.fadeAmbientIn(2);
     setStage(AppStage.SPLASH);
     setUserContext('');
     setSelectedPoem(null);
   };
 
-  // Background Animation Component
-  const MovingBackground = () => (
-    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+  // Static Background Base (Gradients)
+  const BackgroundBase = () => (
+    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
        {/* Deep gradient base */}
        <div className="absolute inset-0 bg-gradient-to-b from-mystic-900 via-[#131525] to-black" />
-       
-       {/* Animated Orbs/Stars */}
-       <motion.div 
-         animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
-         transition={{ duration: 10, repeat: Infinity }}
-         className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-900/30 rounded-full blur-[100px]"
-       />
-       <motion.div 
-         animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.3, 1] }}
-         transition={{ duration: 15, repeat: Infinity, delay: 2 }}
-         className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-mystic-gold/10 rounded-full blur-[120px]"
-       />
-       
        {/* Fog/Mist Overlay */}
        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 animate-pulse-slow" />
     </div>
   );
 
   return (
-    <div className="min-h-screen text-slate-100 font-sans overflow-x-hidden relative">
-      <MovingBackground />
+    <div className="min-h-screen text-slate-100 font-persian overflow-x-hidden relative" dir="rtl">
+      <BackgroundBase />
+      <Starfield />
 
       {/* Main Content Area */}
       <main className="relative z-10 w-full h-screen flex flex-col">
@@ -83,7 +76,7 @@ const App: React.FC = () => {
         <header className="p-6 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent relative z-50">
           <div className="flex items-center gap-2 text-mystic-gold">
             <Moon className="w-5 h-5 fill-current" />
-            <h1 className="font-serif tracking-widest text-lg">FAL-E HAFEZ</h1>
+            <h1 className="font-serif tracking-widest text-lg font-bold">فال حافظ</h1>
           </div>
           
           <button 
@@ -111,25 +104,26 @@ const App: React.FC = () => {
                    initial={{ y: 20, opacity: 0 }}
                    animate={{ y: 0, opacity: 1 }}
                    transition={{ delay: 0.2, duration: 0.8 }}
-                   className="text-4xl md:text-6xl font-serif text-slate-100 mb-6 leading-tight"
+                   className="text-5xl md:text-7xl text-slate-100 mb-8 leading-tight font-bold"
                 >
-                  The Digital <span className="text-mystic-gold italic">Ritual</span>
+                  لسان <span className="text-mystic-gold italic">الغیب</span>
                 </motion.h2>
                 <motion.p 
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="max-w-md text-slate-400 mb-10 font-light"
+                  className="max-w-md text-slate-300 mb-12 text-lg leading-loose"
                 >
-                  Consult the tongue of the unseen. Bridge ancient wisdom with modern insight.
+                  ای حافظ شیرازی، تو محرم هر رازی. <br/>
+                  برای شنیدن پاسخ دل، نیت کنید.
                 </motion.p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={startRitual}
-                  className="px-10 py-4 border border-mystic-gold/30 bg-mystic-gold/10 backdrop-blur-sm rounded-full text-mystic-gold uppercase tracking-[0.2em] text-sm hover:bg-mystic-gold hover:text-mystic-900 transition-all duration-300"
+                  className="px-12 py-4 border border-mystic-gold/30 bg-mystic-gold/10 backdrop-blur-sm rounded-full text-mystic-gold text-xl font-bold hover:bg-mystic-gold hover:text-mystic-900 transition-all duration-300 shadow-[0_0_20px_rgba(251,191,36,0.1)]"
                 >
-                  Begin Ceremony
+                  نیت کنید
                 </motion.button>
               </motion.div>
             )}
@@ -143,13 +137,13 @@ const App: React.FC = () => {
                 exit={{ opacity: 0, scale: 1.05 }}
                 className="flex flex-col items-center justify-center h-full px-4"
               >
-                <h3 className="text-2xl font-serif mb-8 text-center">What is your heart seeking?</h3>
+                <h3 className="text-2xl md:text-3xl mb-10 text-center text-slate-200">دل در گرو چه دارید؟</h3>
                 <div className="grid grid-cols-2 gap-4 w-full max-w-md">
                   {CONTEXT_OPTIONS.map((ctx) => (
                     <button
                       key={ctx}
                       onClick={() => handleContextSelect(ctx)}
-                      className="p-4 border border-slate-700 bg-slate-900/50 hover:bg-mystic-gold/20 hover:border-mystic-gold text-slate-300 rounded-lg transition-all text-sm uppercase tracking-wider backdrop-blur-sm"
+                      className="p-5 border border-slate-700 bg-slate-900/50 hover:bg-mystic-gold/20 hover:border-mystic-gold text-slate-200 rounded-xl transition-all text-lg backdrop-blur-sm"
                     >
                       {ctx}
                     </button>
@@ -207,14 +201,14 @@ const App: React.FC = () => {
         {/* Footer/Hint */}
         {stage !== AppStage.REVEAL && (
           <motion.div 
-            className="p-6 text-center text-xs text-slate-600 uppercase tracking-widest"
+            className="p-6 text-center text-xs text-slate-600 tracking-widest"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
           >
             <span className="flex items-center justify-center gap-2">
               <Sparkles className="w-3 h-3" />
-              Sufi Wisdom x Artificial Intelligence
+              تلفیق عرفان و هوش مصنوعی
             </span>
           </motion.div>
         )}

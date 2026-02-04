@@ -18,4 +18,4 @@ export interface InterpretationResponse {
   reflection: string;
 }
 
-export type ContextOption = 'Love' | 'Career' | 'Grief' | 'Guidance' | 'Spirituality' | 'Uncertainty';
+export type ContextOption = string;

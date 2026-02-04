@@ -18,16 +18,17 @@ const TheScroll: React.FC<TheScrollProps> = ({ onSelect }) => {
        <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="absolute top-10 text-center z-20"
+        className="absolute top-10 text-center z-20 px-4"
       >
-        <h2 className="text-2xl font-serif text-mystic-gold">The Divan</h2>
-        <p className="text-slate-400 text-sm mt-2">Swipe the pages of fate. Stop when your heart signals.</p>
+        <h2 className="text-2xl text-mystic-gold font-bold">دیوان حافظ</h2>
+        <p className="text-slate-400 text-sm mt-2">صفحات تقدیر را ورق بزنید و با اشاره دل انتخاب کنید.</p>
       </motion.div>
 
       {/* Scroll Container */}
       <div 
         ref={scrollRef}
         className="w-full h-[60vh] overflow-x-auto flex items-center gap-6 px-[50vw] snap-x snap-mandatory no-scrollbar py-10"
+        dir="ltr" // Keep scroll LTR for swiping mechanic consistency, though content is abstract
       >
         {displayPoems.map((poem, idx) => (
           <motion.div
@@ -53,8 +54,8 @@ const TheScroll: React.FC<TheScrollProps> = ({ onSelect }) => {
               </div>
               
               <div className="absolute bottom-6">
-                <span className="text-xs uppercase tracking-[0.2em] text-slate-500 group-hover:text-mystic-gold transition-colors">
-                  Select
+                <span className="text-sm font-bold text-slate-500 group-hover:text-mystic-gold transition-colors">
+                  انتخاب
                 </span>
               </div>
             </div>
