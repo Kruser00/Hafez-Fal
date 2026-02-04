@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Poem, InterpretationResponse } from '../types';
 import { interpretFal } from '../services/geminiService';
-import { BrainCircuit, Loader2, Share2, RefreshCw, Sparkles } from 'lucide-react';
+import { BrainCircuit, Loader2, Share2, RefreshCw, Eye } from 'lucide-react';
 import { audioEngine } from '../utils/audioEngine';
+import { HAFEZ_POEMS } from '../constants';
 
 interface TheRevealProps {
   poem: Poem;
@@ -14,6 +15,8 @@ interface TheRevealProps {
 const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => {
   const [interpretation, setInterpretation] = useState<InterpretationResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showShahed, setShowShahed] = useState(false);
+  const [shahedVerse, setShahedVerse] = useState<string>('');
 
   // Trigger audio on component mount
   useEffect(() => {
@@ -32,6 +35,18 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
     fetchInterpretation();
     return () => { mounted = false; };
   }, [poem, userContext]);
+
+  const handleRevealShahed = () => {
+    audioEngine.playClick();
+    // Simulate "Shahed" (Witness) by picking a random couplet from another poem
+    // In a real app, this would be a specific database relationship or AI generated
+    const otherPoems = HAFEZ_POEMS.filter(p => p.id !== poem.id);
+    const randomPoem = otherPoems[Math.floor(Math.random() * otherPoems.length)];
+    const randomVerse = randomPoem.persian[Math.floor(Math.random() * randomPoem.persian.length)];
+    
+    setShahedVerse(randomVerse);
+    setShowShahed(true);
+  };
 
   return (
     <div className="w-full max-w-4xl mx-auto pb-24 px-4 pt-4 md:pt-10 relative z-10" dir="rtl">
@@ -67,7 +82,7 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2.5, duration: 1 }}
-        className="relative bg-mystic-800/40 backdrop-blur-md rounded-xl p-6 md:p-8 border border-white/5 shadow-2xl overflow-hidden"
+        className="relative bg-mystic-800/40 backdrop-blur-md rounded-xl p-6 md:p-8 border border-white/5 shadow-2xl overflow-hidden mb-8"
       >
         {/* Decorative glass shine */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-mystic-gold/50 to-transparent opacity-50" />
@@ -99,12 +114,43 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
         )}
       </motion.div>
 
+      {/* The Shahed (Witness) Feature */}
+      {!loading && (
+        <div className="flex flex-col items-center mb-10">
+            <AnimatePresence>
+                {!showShahed ? (
+                    <motion.button
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0, height: 0 }}
+                        onClick={handleRevealShahed}
+                        className="text-mystic-gold/70 hover:text-mystic-gold text-sm flex items-center gap-2 border-b border-dashed border-mystic-gold/30 pb-1 transition-colors"
+                    >
+                        <Eye className="w-4 h-4" />
+                        آیا نیاز به شاهد دارید؟
+                    </motion.button>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="w-full text-center overflow-hidden"
+                    >
+                         <div className="inline-block px-3 py-1 bg-mystic-gold/10 rounded-full text-xs text-mystic-gold mb-3">شاهد فال</div>
+                         <p className="font-persian text-xl md:text-2xl text-slate-300 leading-loose">
+                            {shahedVerse}
+                         </p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+      )}
+
       {/* Actions */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 4 }}
-        className="mt-10 md:mt-12 flex flex-col sm:flex-row justify-center gap-4"
+        className="flex flex-col sm:flex-row justify-center gap-4 border-t border-slate-800 pt-8"
       >
          <button 
            onClick={onReset}
