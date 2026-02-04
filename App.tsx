@@ -71,9 +71,9 @@ const App: React.FC = () => {
       <Starfield />
 
       {/* Main Content Area */}
-      <main className="relative z-10 w-full h-screen flex flex-col">
-        {/* Header */}
-        <header className="p-6 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent relative z-50">
+      <main className="relative z-10 w-full h-screen flex flex-col supports-[height:100dvh]:h-[100dvh]">
+        {/* Header - Reduced padding for mobile */}
+        <header className="p-4 md:p-6 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent relative z-50 shrink-0">
           <div className="flex items-center gap-2 text-mystic-gold">
             <Moon className="w-5 h-5 fill-current" />
             <h1 className="font-serif tracking-widest text-lg font-bold">فال حافظ</h1>
@@ -88,7 +88,7 @@ const App: React.FC = () => {
         </header>
 
         {/* Dynamic Stage Rendering */}
-        <div className="flex-grow flex flex-col relative">
+        <div className="flex-grow flex flex-col relative overflow-hidden">
           <AnimatePresence mode="wait">
             
             {/* STAGE 1: SPLASH */}
@@ -98,13 +98,13 @@ const App: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="flex flex-col items-center justify-center h-full px-4 text-center"
+                className="flex flex-col items-center justify-center h-full px-4 text-center pb-20"
               >
                 <motion.h2 
                    initial={{ y: 20, opacity: 0 }}
                    animate={{ y: 0, opacity: 1 }}
                    transition={{ delay: 0.2, duration: 0.8 }}
-                   className="text-5xl md:text-7xl text-slate-100 mb-8 leading-tight font-bold"
+                   className="text-5xl md:text-7xl text-slate-100 mb-6 md:mb-8 leading-tight font-bold"
                 >
                   لسان <span className="text-mystic-gold italic">الغیب</span>
                 </motion.h2>
@@ -112,7 +112,7 @@ const App: React.FC = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="max-w-md text-slate-300 mb-12 text-lg leading-loose"
+                  className="max-w-md text-slate-300 mb-10 md:mb-12 text-base md:text-lg leading-loose"
                 >
                   ای حافظ شیرازی، تو محرم هر رازی. <br/>
                   برای شنیدن پاسخ دل، نیت کنید.
@@ -121,7 +121,7 @@ const App: React.FC = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={startRitual}
-                  className="px-12 py-4 border border-mystic-gold/30 bg-mystic-gold/10 backdrop-blur-sm rounded-full text-mystic-gold text-xl font-bold hover:bg-mystic-gold hover:text-mystic-900 transition-all duration-300 shadow-[0_0_20px_rgba(251,191,36,0.1)]"
+                  className="px-10 py-3 md:px-12 md:py-4 border border-mystic-gold/30 bg-mystic-gold/10 backdrop-blur-sm rounded-full text-mystic-gold text-lg md:text-xl font-bold hover:bg-mystic-gold hover:text-mystic-900 transition-all duration-300 shadow-[0_0_20px_rgba(251,191,36,0.1)]"
                 >
                   نیت کنید
                 </motion.button>
@@ -135,15 +135,15 @@ const App: React.FC = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
-                className="flex flex-col items-center justify-center h-full px-4"
+                className="flex flex-col items-center justify-center h-full px-4 pb-12"
               >
-                <h3 className="text-2xl md:text-3xl mb-10 text-center text-slate-200">دل در گرو چه دارید؟</h3>
-                <div className="grid grid-cols-2 gap-4 w-full max-w-md">
+                <h3 className="text-2xl md:text-3xl mb-8 md:mb-10 text-center text-slate-200">دل در گرو چه دارید؟</h3>
+                <div className="grid grid-cols-2 gap-3 md:gap-4 w-full max-w-md">
                   {CONTEXT_OPTIONS.map((ctx) => (
                     <button
                       key={ctx}
                       onClick={() => handleContextSelect(ctx)}
-                      className="p-5 border border-slate-700 bg-slate-900/50 hover:bg-mystic-gold/20 hover:border-mystic-gold text-slate-200 rounded-xl transition-all text-lg backdrop-blur-sm"
+                      className="p-4 md:p-5 border border-slate-700 bg-slate-900/50 hover:bg-mystic-gold/20 hover:border-mystic-gold text-slate-200 rounded-xl transition-all text-base md:text-lg backdrop-blur-sm"
                     >
                       {ctx}
                     </button>
@@ -198,10 +198,10 @@ const App: React.FC = () => {
           </AnimatePresence>
         </div>
         
-        {/* Footer/Hint */}
+        {/* Footer/Hint - Hidden on reveal to maximize reading space */}
         {stage !== AppStage.REVEAL && (
           <motion.div 
-            className="p-6 text-center text-xs text-slate-600 tracking-widest"
+            className="p-4 md:p-6 text-center text-[10px] md:text-xs text-slate-600 tracking-widest shrink-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}

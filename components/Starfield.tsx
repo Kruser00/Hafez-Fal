@@ -14,13 +14,23 @@ const Starfield: React.FC = () => {
     canvas.width = width;
     canvas.height = height;
 
-    // Mouse tracking
+    // Mouse & Touch tracking
     const mouse = { x: -1000, y: -1000 };
+    
     const handleMouseMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
     };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        mouse.x = e.touches[0].clientX;
+        mouse.y = e.touches[0].clientY;
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
 
     // Star configuration
     const STAR_COUNT = 100;
@@ -53,8 +63,6 @@ const Starfield: React.FC = () => {
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Gradient background handled by CSS, we just draw stars
-      
       stars.forEach((star, i) => {
         // Move
         star.x += star.vx;
@@ -70,7 +78,7 @@ const Starfield: React.FC = () => {
         ctx.fillStyle = `rgba(251, 191, 36, ${star.alpha})`; // Mystic Gold
         ctx.fill();
 
-        // Connect near mouse
+        // Connect near mouse/touch
         const dxMouse = mouse.x - star.x;
         const dyMouse = mouse.y - star.y;
         const distMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
@@ -112,6 +120,7 @@ const Starfield: React.FC = () => {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };
