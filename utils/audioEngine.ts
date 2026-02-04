@@ -51,6 +51,38 @@ class AudioEngine {
     return this.isMuted;
   }
 
+  /**
+   * Triggers haptic feedback on supported devices
+   */
+  triggerHaptic(type: 'light' | 'medium' | 'heavy' | 'success' | 'failure' | 'tick') {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try {
+        switch (type) {
+          case 'tick':
+            navigator.vibrate(5); // Very sharp tick
+            break;
+          case 'light':
+            navigator.vibrate(10); // Subtle tick
+            break;
+          case 'medium':
+            navigator.vibrate(40); // Standard tap
+            break;
+          case 'heavy':
+            navigator.vibrate(70); // Firm click
+            break;
+          case 'success':
+            navigator.vibrate([50, 50, 150]); // Da-da-DA pattern
+            break;
+          case 'failure':
+            navigator.vibrate([100, 50, 100]); // Buzz-buzz
+            break;
+        }
+      } catch (e) {
+        // Haptics not supported or restricted
+      }
+    }
+  }
+
   private initNoiseBuffer() {
     if (!this.ctx || this.noiseBuffer) return;
     
@@ -147,6 +179,7 @@ class AudioEngine {
   }
 
   playClick() {
+    this.triggerHaptic('light'); // Feedback
     if (!this.ctx) return;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
@@ -223,123 +256,82 @@ class AudioEngine {
        this.breathFilter.frequency.setValueAtTime(this.breathFilter.frequency.value, t);
 
        if (completed) {
-         // EXHALE EFFECT: Filter closes down, Volume fades out gently
-         const exhaleDuration = 2.0;
-         this.breathFilter.frequency.exponentialRampToValueAtTime(100, t + exhaleDuration);
-         this.breathGain.gain.exponentialRampToValueAtTime(0.001, t + exhaleDuration);
-         this.breathSource.stop(t + exhaleDuration);
+         // Exhale / Release
+         this.breathFilter.frequency.exponentialRampToValueAtTime(100, t + 2.0);
+         this.breathGain.gain.linearRampToValueAtTime(0, t + 2.0);
+         this.breathSource.stop(t + 2.0);
+         this.triggerHaptic('success');
        } else {
-         // INTERRUPTED: Quick fade
-         const fadeOut = 0.2;
-         this.breathGain.gain.linearRampToValueAtTime(0, t + fadeOut);
-         this.breathSource.stop(t + fadeOut);
+         // Interrupted - quick fade
+         this.breathGain.gain.linearRampToValueAtTime(0, t + 0.2);
+         this.breathSource.stop(t + 0.2);
+         this.triggerHaptic('failure');
        }
-
-       // Cleanup references after sound finishes
-       const source = this.breathSource;
-       const gain = this.breathGain;
-       const filter = this.breathFilter;
-       
-       setTimeout(() => {
-           source.disconnect();
-           gain.disconnect();
-           filter.disconnect();
-       }, (completed ? 2100 : 300));
-       
-       this.breathSource = null;
-       this.breathGain = null;
-       this.breathFilter = null;
     }
+    this.breathSource = null;
+    this.breathGain = null;
+    this.breathFilter = null;
   }
 
   playCompletion() {
-      if (!this.ctx) return;
-      // Bright chime (C5)
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(523.25, this.ctx.currentTime); 
-      
-      // Bell envelope
-      gain.gain.setValueAtTime(0, this.ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.3, this.ctx.currentTime + 0.05); // Attack
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 3); // Decay
-      
-      osc.connect(gain);
-      gain.connect(this.masterGain!);
-      osc.start();
-      osc.stop(this.ctx.currentTime + 3);
+    this.triggerHaptic('success');
+    if (!this.ctx) return;
+    
+    const t = this.ctx.currentTime;
+    
+    // Bell/Chime sound
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, t); // C5
+    // Add subtle harmonics
+    const osc2 = this.ctx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(1046.50, t); // C6
+    const gain2 = this.ctx.createGain();
+    
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.3, t + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 3.0);
+    
+    gain2.gain.setValueAtTime(0, t);
+    gain2.gain.linearRampToValueAtTime(0.1, t + 0.1);
+    gain2.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
+    
+    osc.connect(gain);
+    osc2.connect(gain2);
+    gain.connect(this.masterGain!);
+    gain2.connect(this.masterGain!);
+    
+    osc.start(t);
+    osc2.start(t);
+    osc.stop(t + 3.5);
+    osc2.stop(t + 3.5);
   }
 
   playReveal() {
-      if (!this.ctx) return;
-      const now = this.ctx.currentTime;
-
-      // 1. The Bed: Major chord swell (D Major: D3, F#3, A3)
-      const frequencies = [146.83, 185.00, 220.00]; 
-      frequencies.forEach((freq, i) => {
-          const osc = this.ctx!.createOscillator();
-          const gain = this.ctx!.createGain();
-          
-          osc.type = i === 1 ? 'triangle' : 'sine'; // Add some texture with triangle wave
-          osc.frequency.value = freq;
-          
-          gain.gain.setValueAtTime(0, now);
-          gain.gain.linearRampToValueAtTime(0.1, now + 2); // Slow attack (2s)
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 8); // Long release
-          
-          osc.connect(gain);
-          gain.connect(this.masterGain!);
-          osc.start(now);
-          osc.stop(now + 8);
-      });
-
-      // 2. The Whoosh: Mist clearing effect (Filtered Noise)
-      if (this.noiseBuffer) {
-        const noiseSrc = this.ctx.createBufferSource();
-        const noiseGain = this.ctx.createGain();
-        const noiseFilter = this.ctx.createBiquadFilter();
-
-        noiseSrc.buffer = this.noiseBuffer;
-        noiseFilter.type = 'highpass';
-        
-        // Filter sweep
-        noiseFilter.frequency.setValueAtTime(500, now);
-        noiseFilter.frequency.exponentialRampToValueAtTime(8000, now + 1.5);
-        
-        // Volume sweep
-        noiseGain.gain.setValueAtTime(0, now);
-        noiseGain.gain.linearRampToValueAtTime(0.1, now + 0.5);
-        noiseGain.gain.linearRampToValueAtTime(0, now + 2);
-
-        noiseSrc.connect(noiseFilter);
-        noiseFilter.connect(noiseGain);
-        noiseGain.connect(this.masterGain!);
-        noiseSrc.start(now);
-        noiseSrc.stop(now + 2);
-      }
-
-      // 3. The Sparkle: Magical Wind Chimes
-      // Play 5 random "sparkles" over the next 1 second
-      for(let i=0; i<6; i++) {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        const startTime = now + (i * 0.15) + (Math.random() * 0.1); // Staggered start
-
-        osc.type = 'sine';
-        // Random high frequencies between 2kHz and 5kHz
-        osc.frequency.value = 2000 + Math.random() * 3000;
-
-        gain.gain.setValueAtTime(0, startTime);
-        gain.gain.linearRampToValueAtTime(0.05, startTime + 0.05); // Quick attack
-        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.0); // Ring out
-
-        osc.connect(gain);
-        gain.connect(this.masterGain!);
-        osc.start(startTime);
-        osc.stop(startTime + 1.0);
-      }
+    this.triggerHaptic('medium');
+    if (!this.ctx) return;
+    
+    const t = this.ctx.currentTime;
+    // Mystical swell
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(110, t); // A2
+    osc.frequency.linearRampToValueAtTime(220, t + 2); // Slide up to A3
+    
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.15, t + 1.5);
+    gain.gain.linearRampToValueAtTime(0, t + 4);
+    
+    osc.connect(gain);
+    gain.connect(this.masterGain!);
+    
+    osc.start(t);
+    osc.stop(t + 4);
   }
 }
 

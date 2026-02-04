@@ -11,6 +11,7 @@ const RitualBreath: React.FC<RitualBreathProps> = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const lastHapticRef = useRef<number>(0);
 
   const cleanUp = useCallback(() => {
     if (intervalRef.current) {
@@ -43,6 +44,13 @@ const RitualBreath: React.FC<RitualBreathProps> = ({ onComplete }) => {
         
         setProgress(newProgress);
 
+        // Haptic Feedback Logic: Trigger a tick every ~20%
+        // This creates a sense of building momentum
+        if (Math.floor(newProgress) % 20 === 0 && Math.floor(newProgress) !== lastHapticRef.current && newProgress < 99) {
+            audioEngine.triggerHaptic('tick');
+            lastHapticRef.current = Math.floor(newProgress);
+        }
+
         if (newProgress >= 100) {
           cleanUp();
           audioEngine.stopBreath(true); // True = completed
@@ -51,6 +59,7 @@ const RitualBreath: React.FC<RitualBreathProps> = ({ onComplete }) => {
       }, 16); // ~60fps
     } else {
       setProgress(0);
+      lastHapticRef.current = 0;
       cleanUp();
     }
 

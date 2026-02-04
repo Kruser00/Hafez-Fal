@@ -32,6 +32,11 @@ export const interpretFal = async (
       contents: prompt,
       config: {
         systemInstruction: SUFI_SYSTEM_PROMPT,
+        // Cost Optimization: 
+        // 1. Disable "thinking" tokens as this is a creative/associative task, not complex logic.
+        // 2. Limit output tokens to prevent long, expensive responses.
+        thinkingConfig: { thinkingBudget: 0 }, 
+        maxOutputTokens: 500,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
