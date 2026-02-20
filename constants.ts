@@ -5,6 +5,7 @@ export const HAFEZ_POEMS: Poem[] = [
   {
     id: 1,
     theme: "Love & Divine Intoxication",
+    imageUrl: "/images/poem-1.jpg", // Rose/Wine aesthetic
     persian: [
       "الا یا ایها الساقی ادر کأسا و ناولها",
       "که عشق آسان نمود اول ولی افتاد مشکل‌ها",
@@ -25,6 +26,7 @@ export const HAFEZ_POEMS: Poem[] = [
   {
     id: 2,
     theme: "Lost Joseph & Hope",
+    imageUrl: "/images/poem-2.jpg", // Morning light/Hope
     persian: [
       "یوسف گم گشته بازآید به کنعان غم مخور",
       "کلبه احزان شود روزی گلستان غم مخور",
@@ -45,6 +47,7 @@ export const HAFEZ_POEMS: Poem[] = [
   {
     id: 3,
     theme: "The Mystery of Existence",
+    imageUrl: "/images/poem-3.jpg", // Night sky/Cosmos
     persian: [
       "سال‌ها دل طلب جام جم از ما می‌کرد",
       "وان چه خود داشت ز بیگانه تمنا می‌کرد",

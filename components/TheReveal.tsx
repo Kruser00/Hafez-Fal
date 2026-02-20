@@ -58,6 +58,24 @@ const TheReveal: React.FC<TheRevealProps> = ({ poem, userContext, onReset }) => 
         transition={{ duration: 1.5, ease: "easeOut" }}
         className="mb-8 md:mb-12 text-center"
       >
+        {/* Card Art Reveal */}
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0, rotateY: 90 }}
+          animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+          transition={{ duration: 1.2, type: "spring" }}
+          className="w-48 h-72 md:w-64 md:h-96 mx-auto mb-8 relative rounded-xl overflow-hidden shadow-[0_0_40px_rgba(251,191,36,0.2)] border-2 border-mystic-gold/30 group"
+        >
+          <img 
+            src={poem.imageUrl} 
+            alt={poem.theme}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+          <div className="absolute bottom-4 left-0 right-0 text-center">
+             <p className="text-mystic-gold font-serif text-sm tracking-widest uppercase opacity-80">{poem.theme}</p>
+          </div>
+        </motion.div>
+
         <div className="inline-block p-1 border-t border-b border-mystic-gold/30 mb-6 md:mb-8">
             <span className="text-xs md:text-sm font-bold text-slate-400 px-4">غزل شماره {poem.id}</span>
         </div>

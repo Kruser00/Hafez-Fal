@@ -11,6 +11,7 @@ export interface Poem {
   persian: string[]; // Array of lines (couplets)
   english: string[]; // Translation
   theme: string;
+  imageUrl: string;
 }
 
 export interface InterpretationResponse {
